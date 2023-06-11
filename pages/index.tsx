@@ -18,7 +18,10 @@ export default function Home() {
   const [email, setEmail] = useState("");
   const [telefone, setTelefone] = useState("");
   const [observacoes, setObservacoes] = useState("");
-  const [contatos, setContatos] = useState<Contato[]>()
+
+  const [contatos, setContatos] = useState<Contato[]>();
+  const [busca,setBusca] = useState<Contato[]>();
+  const [estaBuscando, setEstaBuscando] = useState(false);
 
   useEffect(() => {
 
@@ -65,6 +68,29 @@ export default function Home() {
     const referencia = database.ref(`contatos/${ref}`).remove()
   }
 
+  function buscar(event: FormEvent){
+    const palavra = event.target.value;
+
+    if(palavra.length > 0){
+
+      setEstaBuscando(true);
+
+    const dados = new Array
+    
+    contatos?.map(contato => {
+      const regra = new RegExp(event?.target.value,'gi')
+      if(regra.test(contato.nome)){
+        dados.push(contato)
+      }
+    })
+
+    setBusca(dados);
+
+    }else{
+      setEstaBuscando(false)
+    }
+  }
+
   return (
     <>
       <main className={styles.container}>
@@ -76,8 +102,9 @@ export default function Home() {
           <button type='submit' >Salvar</button>
         </form>
         <div className={styles.caixacontatos}>
-          <input type='text' placeholder='Buscar' />
-          { contatos?.map(contato => {
+          <input type='text' placeholder='Buscar' onChange={buscar}/>
+          { estaBuscando ? 
+          busca?.map(contato => {
             return(
             <div key={contato.chave} className={styles.caixaindividual}>
             <div className={styles.boxtitulo}>
@@ -93,7 +120,23 @@ export default function Home() {
             <p>{contato.observacoes}</p>
           </div>
           </div>
-          )}) }
+          )}) :   contatos?.map(contato => {
+            return(
+            <div key={contato.chave} className={styles.caixaindividual}>
+            <div className={styles.boxtitulo}>
+              <p className={styles.nometitulo}>{contato.nome}</p>
+              <div>
+                <a>Editar</a>
+                <a onClick={() => deletar(contato.chave) } >Excluir</a>
+              </div>
+            </div>
+          <div className={styles.dados}>
+            <p>{contato.email}</p>
+            <p>{contato.telefone}</p>
+            <p>{contato.observacoes}</p>
+          </div>
+          </div>
+          )})}
           
         </div>
       </main>

@@ -61,6 +61,10 @@ export default function Home() {
     setObservacoes('')
   }
 
+  function deletar(ref: string){
+    const referencia = database.ref(`contatos/${ref}`).remove()
+  }
+
   return (
     <>
       <main className={styles.container}>
@@ -75,12 +79,12 @@ export default function Home() {
           <input type='text' placeholder='Buscar' />
           { contatos?.map(contato => {
             return(
-            <div className={styles.caixaindividual}>
+            <div key={contato.chave} className={styles.caixaindividual}>
             <div className={styles.boxtitulo}>
               <p className={styles.nometitulo}>{contato.nome}</p>
               <div>
                 <a>Editar</a>
-                <a>Excluir</a>
+                <a onClick={() => deletar(contato.chave) } >Excluir</a>
               </div>
             </div>
           <div className={styles.dados}>
